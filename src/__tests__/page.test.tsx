@@ -29,7 +29,7 @@ test("handles API errors", async () => {
 	await expect(fetch("/api/data")).rejects.toThrow("Network error");
 });
 test("renders HomePage and checks for content", async () => {
-	(global as any).fetch = jest.fn().mockResolvedValueOnce({
+	globalThis.fetch = jest.fn().mockResolvedValueOnce({
 		status: 200,
 		ok: true,
 		json: async () => [
@@ -50,7 +50,7 @@ test("renders HomePage and checks for content", async () => {
 });
 
 test("handle errors when fetch profiles", async () => {
-	(global as any).fetch = jest.fn().mockRejectedValueOnce(new Error("network"));
+	global.fetch = jest.fn().mockRejectedValueOnce(new Error("network"));
 	render(<HomePage />);
 	expect(
 		await screen.findByText(/Error fetching profiles/i)
@@ -58,7 +58,7 @@ test("handle errors when fetch profiles", async () => {
 });
 
 test("handle errors when there are no profiles", async () => {
-	(global as any).fetch = jest.fn().mockResolvedValueOnce({
+	global.fetch = jest.fn().mockResolvedValueOnce({
 		status: 204,
 		ok: true,
 		json: async () => Promise.resolve([]),

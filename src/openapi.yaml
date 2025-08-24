@@ -1,0 +1,89 @@
+openapi: 3.0.0
+info:
+  title: Matchy API
+  description: API per la gestione dei profili di un'applicazione di incontri.
+  version: 1.0.0
+servers:
+  - url: /api
+    description: Server di sviluppo
+paths:
+  /profiles:
+    get:
+      summary: Recupera una lista di profili
+      description: Restituisce una lista completa di tutti i profili disponibili nel database.
+      operationId: getProfiles
+      responses:
+        "200":
+          description: Una lista di profili recuperata con successo.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Profile"
+        "204":
+          description: Nessun profilo trovato.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No profiles available.
+        "500":
+          description: Errore interno del server.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Profile:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identificativo unico del profilo.
+          example: u1
+        name:
+          type: string
+          description: Il nome dell'utente.
+          example: Alice
+        photo:
+          type: string
+          description: L'URL della foto del profilo.
+          example: https://i.pravatar.cc/360?img=43
+        age:
+          type: integer
+          description: L'età dell'utente.
+          example: 25
+        action:
+          type: string
+          nullable: true
+          description: L'ultima azione di swipe ("like" o "dislike") o null.
+          example: like
+        about:
+          type: string
+          nullable: true
+          description: Breve descrizione dell'utente.
+          example: I love hiking and outdoor adventures.
+        distance:
+          type: string
+          description: La distanza dall'utente corrente.
+          example: 5km away
+      required:
+        - id
+        - name
+        - photo
+        - age
+        - distance
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 500
+        message:
+          type: string
+          example: Errore interno del server

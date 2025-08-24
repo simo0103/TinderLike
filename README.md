@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+📖 Tinder-like App (Next.js + TypeScript + MUI)
 
-## Getting Started
+🚀 Overview
 
-First, run the development server:
+A production-ready prototype of a Tinder-like application, where a user can swipe through profiles with Like or Dislike.
+No registration, authentication, or profile management is included — only the swipe/match functionality.
 
-```bash
+Stack:
+
+Next.js 13+ (App Router)
+with TypeScript
+
+Material UI
+for UI components
+
+API mock endpoints (/api/profiles) integrated with Next.js
+
+Jest + React Testing Library
+for testing (100% coverage)
+
+📦 Installation
+git clone https://github.com/your-username/tinder-like.git
+cd tinder-like
+npm install
+
+▶️ Development
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App runs at http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+🏗 Production Build
+npm run build
+npm start
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+🧪 Testing
 
-## Learn More
+Run tests with full coverage:
 
-To learn more about Next.js, take a look at the following resources:
+npm run test
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Coverage reports will be available inside the coverage/ folder.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+🔌 API Contract
 
-## Deploy on Vercel
+The API specification is documented in OpenAPI 3.0 format.
+📄 File: openapi.yaml
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+You can open it using Swagger Editor
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Endpoints
+
+GET /api/profiles → returns a list of profiles or 204 if no profiles are left
+
+🛠 Error Handling & Edge Cases
+
+If there are no more profiles → returns 204 No Content, frontend displays “No more profiles”.
+
+Invalid swipe request → returns 400 Bad Request.
+
+If two users like each other → returns { match: true, message: "It's a match with --name!" }.

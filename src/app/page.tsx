@@ -40,6 +40,7 @@ export default function HomePage() {
 				}
 			} catch (e) {
 				if (mounted) setError("Error fetching profiles");
+				console.error(e);
 			} finally {
 				if (mounted) setLoading(false);
 			}
@@ -66,7 +67,7 @@ export default function HomePage() {
 		}
 	}, [matched]);
 
-	const handleSwipe = async (action: "like" | "dislike") => {
+	const handleSwipe = async (_action: "like" | "dislike") => {
 		setDisabled(true);
 		const current = profiles[index];
 		if (!current) return;
@@ -205,7 +206,7 @@ export default function HomePage() {
 			</Stack>
 			{matched && (
 				<Alert severity="success" sx={{ position: "absolute", bottom: 16 }}>
-					It's a match with {profile.name}!
+					It&#39;s a match with {profile.name}!
 				</Alert>
 			)}
 		</Box>

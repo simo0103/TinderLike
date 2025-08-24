@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { Profile } from "../../../types";
 
-let profiles: Profile[] = [
+const profiles: Profile[] = [
 	{
 		id: "u1",
 		name: "Alice",

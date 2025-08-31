@@ -206,6 +206,7 @@ export default function HomePage() {
 											fontSize: 24,
 											fontWeight: "bold",
 											borderRadius: 8,
+											zIndex: 20,
 										}}
 									>
 										It&#39;s a match with {profile.name}!

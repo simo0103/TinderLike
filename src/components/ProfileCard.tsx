@@ -1,8 +1,7 @@
-import React from "react";
 import { Card, CardMedia, CardContent, Typography } from "@mui/material";
 import type { Profile } from "../types";
 
-const ProfileCard: React.FC<{ profile: Profile }> = ({ profile }) => {
+const ProfileCard = ({ profile }: { profile: Profile }) => {
 	return (
 		<Card
 			data-testid={`profile-card-${profile.id}`}
@@ -12,6 +11,7 @@ const ProfileCard: React.FC<{ profile: Profile }> = ({ profile }) => {
 				borderRadius: 8,
 				boxShadow: 3,
 				position: "relative",
+				pointerEvents: "none",
 			}}
 		>
 			<CardMedia
@@ -22,7 +22,10 @@ const ProfileCard: React.FC<{ profile: Profile }> = ({ profile }) => {
 			/>
 			<CardContent
 				sx={{
+					cursor: "pointer",
 					position: "absolute",
+					pointerEvents: "auto",
+					zIndex: 1,
 					paddingX: 2,
 					paddingY: 0,
 					bottom: 16,

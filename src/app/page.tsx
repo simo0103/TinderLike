@@ -8,21 +8,25 @@ import {
 	Typography,
 	IconButton,
 } from "@mui/material";
-import ProfileCard from "../components/ProfileCard";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import SkipNextRoundedIcon from "@mui/icons-material/SkipNextRounded";
-import FavoriteBorderRoundedIcon from "@mui/icons-material/FavoriteBorderRounded";
-import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
+import { motion, AnimatePresence } from "framer-motion";
 import type { Profile } from "../types";
 import styles from "./page.module.css";
+import ProfileCard from "@/components/ProfileCard";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import FavoriteBorderRoundedIcon from "@mui/icons-material/FavoriteBorderRounded";
+import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
+
+const swipePower = (offset: number, velocity: number) =>
+	Math.abs(offset) * velocity;
 
 export default function HomePage() {
 	const [profiles, setProfiles] = useState<Profile[]>([]);
 	const [index, setIndex] = useState(0);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [disabled, setDisabled] = useState(true);
 	const [matched, setMatched] = useState(false);
+	const [swipeDirection, setSwipeDirection] = useState<number>(0);
+	const [disabled, setDisabled] = useState(true);
 
 	useEffect(() => {
 		let mounted = true;
@@ -50,34 +54,23 @@ export default function HomePage() {
 		};
 	}, []);
 
-	const goNext = () => setIndex((i) => i + 1);
+	const handleSwipe = async (action: "like" | "dislike") => {
+		const currentProfile = profiles[index];
+		if (!currentProfile) return;
 
-	const handleOkay = () => {
-		goNext();
-	};
-
-	useEffect(() => {
-		if (matched) {
-			const timer = setTimeout(() => {
-				setDisabled(false);
-				setMatched(false);
-				goNext();
-			}, 3000);
-			return () => clearTimeout(timer);
-		}
-	}, [matched]);
-
-	const handleSwipe = async (_action: "like" | "dislike") => {
-		setDisabled(true);
-		const current = profiles[index];
-		if (!current) return;
-		if (current.action === "like") {
+		const isMatched = currentProfile.action === "like" && action === "like";
+		if (isMatched) {
 			setMatched(true);
-			return;
+			setDisabled(true);
+			setTimeout(() => {
+				setMatched(false);
+				setDisabled(false);
+				setIndex((i) => i + 1);
+			}, 2000);
+		} else {
+			setMatched(false);
+			setIndex((i) => i + 1);
 		}
-		goNext();
-		setDisabled(false);
-		setMatched(false);
 	};
 
 	if (loading) {
@@ -124,6 +117,22 @@ export default function HomePage() {
 	const profile = profiles[index];
 	const profilesEnded = index >= profiles.length;
 
+	const motionVariants = {
+		center: {
+			zIndex: 1,
+			x: 0,
+			rotate: 0,
+			opacity: 1,
+		},
+		exit: (direction: number) => ({
+			zIndex: 0,
+			x: direction > 0 ? 1000 : -1000,
+			rotate: direction > 0 ? 10 : -10,
+			opacity: 0,
+			transition: { duration: 0.2 },
+		}),
+	};
+
 	return (
 		<Box
 			p={2}
@@ -131,13 +140,10 @@ export default function HomePage() {
 			display="flex"
 			alignItems="center"
 			justifyContent="center"
+			className={styles.glassEffect}
+			sx={{ position: "relative", width: "100%" }}
 		>
-			<Stack
-				spacing={2}
-				padding={4}
-				alignItems="center"
-				className={styles.glassEffect}
-			>
+			<Stack spacing={2} padding={4} alignItems="center">
 				<Typography
 					variant="h5"
 					fontWeight={"bold"}
@@ -146,18 +152,92 @@ export default function HomePage() {
 				>
 					Matchy
 				</Typography>
-				<Box p={2}>
-					{profilesEnded ? (
-						<Typography>No more profiles</Typography>
-					) : (
-						<ProfileCard profile={profile} />
-					)}
+				<Box
+					p={2}
+					sx={{
+						position: "relative",
+						width: 360,
+						height: 460,
+					}}
+				>
+					<AnimatePresence>
+						{!profilesEnded ? (
+							<motion.div
+								className={"swipable-div"}
+								key={profile.id}
+								custom={swipeDirection}
+								animate="center"
+								exit="exit"
+								drag="x"
+								variants={motionVariants}
+								dragConstraints={{ left: 0, right: 0 }}
+								onDragEnd={(e, { offset, velocity }) => {
+									const swipe = swipePower(offset.x, velocity.x);
+									if (swipe > 100) {
+										setSwipeDirection(1);
+										handleSwipe("like");
+									} else if (swipe < -100) {
+										setSwipeDirection(-1);
+										handleSwipe("dislike");
+									}
+								}}
+								whileDrag={{ scale: 1.05 }}
+								style={{
+									position: "absolute",
+									top: 0,
+									left: 0,
+									width: "100%",
+								}}
+							>
+								<ProfileCard profile={profile} />
+								{matched && profile && (
+									<div
+										style={{
+											position: "absolute",
+											top: 0,
+											left: 0,
+											right: 0,
+											bottom: 0,
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "center",
+											backgroundColor: "rgba(0,0,0,0.5)",
+											color: "white",
+											fontSize: 24,
+											fontWeight: "bold",
+											borderRadius: 8,
+										}}
+									>
+										It&#39;s a match with {profile.name}!
+									</div>
+								)}
+							</motion.div>
+						) : (
+							<div
+								className={styles.glassEffect}
+								style={{
+									height: "100%",
+									width: "100%",
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center",
+								}}
+							>
+								<Typography variant="h6" color="white">
+									No more profiles
+								</Typography>
+							</div>
+						)}
+					</AnimatePresence>
 				</Box>
 				{!profilesEnded && (
-					<Stack direction="row" spacing={2}>
+					<Stack className={"buttonsWrapper"} direction="row" spacing={2}>
 						<IconButton
 							sx={{
-								backgroundColor: "#ffffff87",
+								":hover": {
+									backgroundColor: "#ffffff87",
+								},
+								backgroundColor: "#ffffffff",
 								border: "1px solid",
 								borderColor: "grey.300",
 								borderRadius: 100,
@@ -170,22 +250,11 @@ export default function HomePage() {
 							<CloseRoundedIcon color="info" />
 						</IconButton>
 						<IconButton
-							data-testid="skip-button"
 							sx={{
-								backgroundColor: "#ffffff87",
-								border: "1px solid",
-								borderColor: "grey.300",
-								borderRadius: 100,
-								boxShadow: 3,
-							}}
-							onClick={handleOkay}
-							disabled={disabled}
-						>
-							<SkipNextRoundedIcon />
-						</IconButton>
-						<IconButton
-							sx={{
-								backgroundColor: "#ffffff87",
+								":hover": {
+									backgroundColor: "#ffffff87",
+								},
+								backgroundColor: "#ffffffff",
 								border: "1px solid",
 								borderColor: "grey.300",
 								borderRadius: 100,
@@ -204,11 +273,6 @@ export default function HomePage() {
 					</Stack>
 				)}
 			</Stack>
-			{matched && (
-				<Alert severity="success" sx={{ position: "absolute", bottom: 16 }}>
-					It&#39;s a match with {profile.name}!
-				</Alert>
-			)}
 		</Box>
 	);
 }

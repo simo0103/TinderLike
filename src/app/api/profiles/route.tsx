@@ -7,7 +7,7 @@ const profiles: Profile[] = [
 		name: "Alice",
 		photo: "https://i.pravatar.cc/360?img=43",
 		age: 25,
-		action: null,
+		action: "dislike",
 		about: "I love hiking and outdoor adventures",
 		distance: "5km away",
 	},
@@ -16,7 +16,7 @@ const profiles: Profile[] = [
 		name: "Anna",
 		photo: "https://i.pravatar.cc/360?img=38",
 		age: 30,
-		action: null,
+		action: "dislike",
 		about: "I enjoy trying new recipes",
 		distance: "10km away",
 	},
@@ -34,7 +34,7 @@ const profiles: Profile[] = [
 		name: "Lucy",
 		photo: "https://i.pravatar.cc/360?img=29",
 		age: 29,
-		action: null,
+		action: "dislike",
 		about: "Avid reader and coffee enthusiast",
 		distance: "12km away",
 	},
@@ -52,14 +52,14 @@ const profiles: Profile[] = [
 		name: "Angela",
 		photo: "https://i.pravatar.cc/360?img=28",
 		age: 28,
-		action: null,
+		action: "dislike",
 		about: "Travel lover and photographer",
 		distance: "15km away",
 	},
 ];
 
 export async function GET() {
-	if (!profiles || profiles.length === 0) {
+	if (!profiles.length) {
 		return new Response(null, { status: 204 });
 	}
 	return NextResponse.json(profiles);
